@@ -1,10 +1,10 @@
-defmodule FiltrarPelicuas do
+defmodule FiltrarPeliculas do
   def main do
-    categoria = "Ingrese la categoría a filtrar: "
-    |> Util.ingresar(:texto)
-    puntuación_minima = "Ingrese la puntuación mínima a filtrar: "
+    categoria = "Ingrese la categoría a filtrar "
+    |> ingresar_categoria()
+    puntuación_minima = "Ingrese la puntuación mínima a filtrar(0-100): "
     |> ingresar_puntuacion()
-    puntuación_maxima = "Ingrese la puntuación máxima a filtrar: "
+    puntuación_maxima = "Ingrese la puntuación máxima a filtrar(0-100): "
     |> ingresar_puntuacion()
     filtrar_peliculas(categoria, puntuación_minima, puntuación_maxima)
     |> generar_mensaje()
@@ -22,25 +22,26 @@ defmodule FiltrarPelicuas do
     end
   end
 
+  def ingresar_categoria(mensaje) do
+    categoria = mensaje <> "Las categorías son las siguientes" <> "(#{Enum.join(obtener_categorias(), ", ")}): "
+    |> Util.ingresar(:texto)
+    |> String.trim()
+    if  not Enum.member?(obtener_categorias(), categoria) do
+      Util.mostrar_error("Error: La categoría ingresada no es válida.")
+      ingresar_categoria(mensaje)
+    else
+      categoria
+    end
+  end
+
+  def obtener_categorias do
+    peliculas()
+    |> Enum.map(& &1[:categoria])
+    |> Enum.uniq()
+  end
+
   def filtrar_peliculas(categoria,puntuación_minima,puntuación_maxima)do
-    peliculas = [
-      %{titulo: "El Padrino", categoria: "Drama", puntuación: 98},
-      %{titulo: "Pulp Fiction", categoria: "Crimen", puntuación: 94},
-      %{titulo: "Forrest Gump", categoria: "Drama", puntuación: 89},
-      %{titulo: "Inception", categoria: "Ciencia Ficción", puntuación: 87},
-      %{titulo: "La La Land", categoria: "Musical", puntuación: 85},
-      %{titulo: "El Rey León", categoria: "Animación", puntuación: 92},
-      %{titulo: "Gladiador", categoria: "Acción", puntuación: 88},
-      %{titulo: "Titanic", categoria: "Romance", puntuación: 90},
-      %{titulo: "Matrix", categoria: "Ciencia Ficción", puntuación: 93},
-      %{titulo: "Toy Story", categoria: "Animación", puntuación: 91},
-      %{titulo: "El Señor de los Anillos", categoria: "Fantasía", puntuación: 97},
-      %{titulo: "Joker", categoria: "Drama", puntuación: 86},
-      %{titulo: "Avengers: Endgame", categoria: "Acción", puntuación: 84},
-      %{titulo: "Coco", categoria: "Animación", puntuación: 88},
-      %{titulo: "Amélie", categoria: "Comedia", puntuación: 83}
-    ]
-    Enum.filter(peliculas, fn pelicula ->
+    Enum.filter(peliculas(), fn pelicula ->
       pelicula[:categoria] == categoria and
       pelicula[:puntuación] >= puntuación_minima and
       pelicula[:puntuación] <= puntuación_maxima
@@ -57,6 +58,21 @@ defmodule FiltrarPelicuas do
       "#{pelicula[:titulo]} (#{pelicula[:categoria]}): #{pelicula[:puntuación]}"
     end)
   end
+
+  def peliculas do
+    [
+      %{titulo: "Inception", categoria: "Ciencia Ficción", puntuación: 87},
+      %{titulo: "The Dark Knight", categoria: "Acción", puntuación: 94},
+      %{titulo: "Interstellar", categoria: "Ciencia Ficción", puntuación: 91},
+      %{titulo: "Pulp Fiction", categoria: "Crimen", puntuación: 89},
+      %{titulo: "The Shawshank Redemption", categoria: "Drama", puntuación: 93},
+      %{titulo: "The Godfather", categoria: "Crimen", puntuación: 92},
+      %{titulo: "The Matrix", categoria: "Ciencia Ficción", puntuación: 88},
+      %{titulo: "Forrest Gump", categoria: "Drama", puntuación: 90},
+      %{titulo: "Gladiator", categoria: "Acción", puntuación: 85},
+      %{titulo: "The Avengers", categoria: "Acción", puntuación: 83}
+    ]
+  end
 end
 
-FiltrarPelicuas.main()
+FiltrarPeliculas.main()
