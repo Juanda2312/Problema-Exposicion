@@ -32,17 +32,28 @@ defmodule FiltrarPeliculas do
     end
   end
 
-  def ingresar_categoria(mensaje) do
-    categoria = mensaje <> "Las categorías son las siguientes" <> "(#{Enum.join(obtener_categorias(), ", ")}): "
+def ingresar_categoria(mensaje) do
+  categoria =
+    mensaje <> "Las categorías son las siguientes" <>
+    "(#{Enum.join(obtener_categorias(), ", ")}): "
     |> Util.ingresar(:texto)
     |> String.trim()
-    if  not Enum.member?(obtener_categorias(), categoria) do
-      Util.mostrar_error("Error: La categoría ingresada no es válida.")
-      ingresar_categoria(mensaje)
-    else
-      categoria
-    end
+
+  # Normalizamos la entrada y las categorías
+  categorias_normalizadas =
+    Enum.map(obtener_categorias(), &minusculas/1)
+
+  unless Enum.member?(categorias_normalizadas, minusculas(categoria)) do
+    Util.mostrar_error("Error: La categoría ingresada no es válida.")
+    ingresar_categoria(mensaje)
+  else
+    # Devolver la categoría original de la lista (no la normalizada)
+    Enum.find(obtener_categorias(), fn c ->
+      minusculas(c) == minusculas(categoria)
+    end)
   end
+end
+
 
   def obtener_categorias do
     peliculas()
@@ -68,6 +79,12 @@ defmodule FiltrarPeliculas do
       "#{pelicula[:titulo]} (#{pelicula[:categoria]}): #{pelicula[:puntuación]}"
     end)
   end
+
+defp minusculas(texto) do
+  texto
+  |> String.downcase() # pasar todo a minúsculas
+end
+
 
   def peliculas do
     [
