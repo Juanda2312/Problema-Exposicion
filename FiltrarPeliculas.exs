@@ -39,7 +39,6 @@ def ingresar_categoria(mensaje) do
     |> Util.ingresar(:texto)
     |> String.trim()
 
-  # Normalizamos la entrada y las categorías
   categorias_normalizadas =
     Enum.map(obtener_categorias(), &minusculas/1)
 
@@ -47,7 +46,6 @@ def ingresar_categoria(mensaje) do
     Util.mostrar_error("Error: La categoría ingresada no es válida.")
     ingresar_categoria(mensaje)
   else
-    # Devolver la categoría original de la lista (no la normalizada)
     Enum.find(obtener_categorias(), fn c ->
       minusculas(c) == minusculas(categoria)
     end)
