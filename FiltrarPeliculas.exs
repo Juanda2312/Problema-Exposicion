@@ -5,7 +5,7 @@ defmodule FiltrarPeliculas do
     puntuación_minima = "Ingrese la puntuación mínima a filtrar(0-100): "
     |> ingresar_puntuacion()
     puntuación_maxima = "Ingrese la puntuación máxima a filtrar(0-100): "
-    |> ingresar_puntuacion()
+    |> ingresar_puntuacion_maxima(puntuación_minima)
     filtrar_peliculas(categoria, puntuación_minima, puntuación_maxima)
     |> generar_mensaje()
     |> Util.mostrar_mensaje()
@@ -19,6 +19,16 @@ defmodule FiltrarPeliculas do
       ingresar_puntuacion(mensaje)
     else
       puntuación
+    end
+  end
+
+  def ingresar_puntuacion_maxima(mensaje, puntuacion_minima) do
+    puntuación_máxima = ingresar_puntuacion(mensaje)
+    if puntuación_máxima < puntuacion_minima do
+      Util.mostrar_error("Error: La puntuación máxima no puede ser menor que la mínima.")
+      ingresar_puntuacion_maxima(mensaje, puntuacion_minima)
+    else
+      puntuación_máxima
     end
   end
 
